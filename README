@@ -1,3 +1,9 @@
+FORK INFO:
+------
+
+This fork enables xdg-open to open files in a terminal when the relevant desktop file contains Terminal=true.
+xdg-terminal was brought back and $XDG_TERMINAL can be set to help it find a sensible terminal emulator.
+
 xdg-utils
 ---------
 
