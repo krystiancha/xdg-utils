@@ -283,6 +283,7 @@ search_desktop_file()
         command="$(get_key "${file}" "Exec" | first_word)"
         command_exec=`which $command 2>/dev/null`
         icon="$(get_key "${file}" "Icon")"
+        terminal="$(get_key "${file}" "Terminal")"
         # FIXME: Actually LC_MESSAGES should be used as described in
         # http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s04.html
         localised_name="$(get_key "${file}" "Name")"
@@ -321,7 +322,11 @@ search_desktop_file()
             args=$(( $args - 1 ))
         done
         [ $replaced -eq 1 ] || set -- "$@" "$target"
-        "$command_exec" "$@"
+        if [ $terminal = true ]; then
+            xdg-terminal "$command_exec" "$@"
+        else
+            "$command_exec" "$@"
+        fi
 
         if [ $? -eq 0 ]; then
             exit_success

@@ -20,11 +20,11 @@ SCRIPTS		= \
     xdg-open \
     xdg-email \
     xdg-screensaver \
-    xdg-settings
+    xdg-settings \
+    xdg-terminal
 #    xdg-su
 #    xdg-copy \
 #    xdg-file-dialog
-#    xdg-terminal
 
 MANPAGES=	$(SCRIPTS:%=man/%.1)
 WEBPAGES=	$(SCRIPTS:%=html/%.html)

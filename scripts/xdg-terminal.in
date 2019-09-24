@@ -142,26 +142,28 @@ terminal_xfce()
 terminal_generic()
 {
     # if $TERM is a known non-command, use hard-coded fallbacks
-    if [ x"$TERM" = x"" ] || [ x"$TERM" = x"linux" ] || [ x"$TERM" = x"vt100" ]; then
+    if [ -n "$XDG_TERMINAL" ]; then
+        TERM=$XDG_TERMINAL
+    elif [ x"$TERM" = x"" ] || [ x"$TERM" = x"linux" ] || [ x"$TERM" = x"vt100" ]; then
         TERM=xterm
     fi
 
     terminal_exec=`which $TERM 2>/dev/null`
 
     if [ -x "$terminal_exec" ]; then
-        if [ x"$1" = x"" ]; then
+        if [ x"$@" = x"" ]; then
             $terminal_exec
         else
             # screen and urxvt won't do their own parsing of quoted arguments
             if [ x"$TERM" = x"screen" ]; then
                 # screen has an incompatible meaning for -e
-                sh -c "exec $terminal_exec $1"
+                sh -c "exec $terminal_exec $@"
             elif [ x"$TERM" = x"urxvt" ] || [ x"$TERM" = x"rxvt-unicode" ] || [ x"$TERM" = x"rxvt" ]; then
                 #TODO: Use whatever mechanism dash supports to test for
                 #      rxvt-* to match things like rxvt-unicode-256color
-                sh -c "exec $terminal_exec -e $1"
+                sh -c "exec $terminal_exec -e $@"
             else
-                $terminal_exec -e "$1"
+                $terminal_exec -e $@
             fi
         fi
 
@@ -216,24 +218,11 @@ terminal_enlightenment()
 
 #[ x"$1" != x"" ] || exit_failure_syntax
 
-command=
-while [ $# -gt 0 ] ; do
-    parm="$1"
-    shift
+command=$@
 
-    case "$parm" in
-      -*)
-        exit_failure_syntax "unexpected option '$parm'"
-        ;;
-
-      *)
-        if [ -n "$command" ] ; then
-            exit_failure_syntax "unexpected argument '$parm'"
-        fi
-        command="$parm"
-        ;;
-    esac
-done
+if [ -n "$XDG_TERMINAL" ]; then
+    terminal_generic "$command"
+fi
 
 detectDE
 
